@@ -80,7 +80,7 @@ Linux x86_64 用の配布ディレクトリと `.tar.gz` を作成できます�
 bash scripts/package-linux-bundle.sh
 ```
 
-出力は `dist/ad-visualization-linux-x86_64/` と同名の `.tar.gz` です。別の出力先を指定する場合はスクリプトの第 1 引数にディレクトリ名を渡します。既存の配布物は上書きしません。
+出力は `dist/ad-visualization-linux-x86_64/`、同名の `.tar.gz` と `.tar.gz.sha256` です。別の出力先を指定する場合はスクリプトの第 1 引数にディレクトリ名を渡します。既存の配布物は上書きしません。
 
 ```bash
 ./dist/ad-visualization-linux-x86_64/run-fixed-scene.sh
@@ -89,6 +89,12 @@ bash scripts/package-linux-bundle.sh
 ```
 
 ヘッドレス版の `run-fixed-scene.sh` は GLFW/X11 にリンクせず、ウィンドウ版は X11 が使える環境で実行します。配布物の実行に Rust ツールチェーンは不要です。対応する Linux のシステムライブラリ、Vulkan ローダーと GPU ドライバーは実行先に必要です。C++ アプリ本体はこの配布物には含めません。
+
+GitHub Release 用の版名付き成果物の作成、検証、アップロード手順は [リリース手順](docs/releasing.md) を参照してください。
+
+## ライセンス
+
+本プロジェクトは [Apache License 2.0](LICENSE) で公開します。同梱フォントと依存クレートのライセンス文書は配布物の `licenses/` に含めます。
 
 ## テスト
 
