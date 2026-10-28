@@ -5,12 +5,13 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 output="${1:-${repo_root}/dist/ad-visualization-linux-x86_64}"
 output="$(realpath -m "${output}")"
 archive="${output}.tar.gz"
+archive_checksum="${archive}.sha256"
 
 if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
   echo "This bundle script currently supports Linux x86_64 only." >&2
   exit 1
 fi
-if [[ -e "${output}" || -e "${archive}" ]]; then
+if [[ -e "${output}" || -e "${archive}" || -e "${archive_checksum}" ]]; then
   echo "Output already exists; choose a different destination: ${output}" >&2
   exit 1
 fi
@@ -36,6 +37,7 @@ install -m 644 cpp/include/ad_visualization/visualizer.hpp "${stage}/include/ad_
 install -m 644 cpp/cmake/AdVisualizationConfig.cmake "${stage}/lib/cmake/AdVisualization/"
 install -m 644 cpp/example/CMakeLists.txt cpp/example/consumer.cpp "${stage}/examples/cpp/"
 install -m 644 crates/ad-render/assets/LIBERATION_LICENSE.txt "${stage}/licenses/LiberationSans-LICENSE.txt"
+install -m 644 LICENSE "${stage}/LICENSE"
 install -m 644 Cargo.lock "${stage}/Cargo.lock"
 
 # Include license files of available Cargo dependencies used for the build.
@@ -117,8 +119,9 @@ return `ad::visualization::Status`. Check errors with `if (!status)` and
 `status.error().message`, then translate to your application's error type.
 The raw C ABI remains available in `include/ad_visualization_ffi.h`.
 
-`licenses/` contains available Cargo dependency notices and the embedded
-Liberation Sans font license. `SHA256SUMS` lists bundle file hashes.
+`LICENSE` contains the Apache-2.0 license for this project. `licenses/`
+contains available Cargo dependency notices and the embedded Liberation Sans
+font license. `SHA256SUMS` lists bundle file hashes.
 BUNDLE_README
 
 (cd "${stage}" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
@@ -132,5 +135,7 @@ done
 mv "${stage}" "${output}"
 trap - EXIT
 tar -C "$(dirname "${output}")" -czf "${archive}" "$(basename "${output}")"
+(cd "$(dirname "${archive}")" && sha256sum "$(basename "${archive}")" > "$(basename "${archive_checksum}")")
 echo "Created ${output}"
 echo "Created ${archive}"
+echo "Created ${archive_checksum}"

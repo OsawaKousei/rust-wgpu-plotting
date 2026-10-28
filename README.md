@@ -10,11 +10,24 @@ Rust の `wgpu` を使う 2D 描画ライブラリです。グラフの構成、
 | [`ad-visualization`](crates/ad-visualization/) | 地図、経路、ロボット、LiDAR 向けの Rust API |
 | [`ad-visualization-ffi`](crates/ad-visualization-ffi/) | C++ 呼び出し用の C ABI |
 
-設計と対象範囲は [描画バックエンド仕様書](docs/rust_rendering_backend_spec.md) を参照してください。
+## 現在利用できる機能
+
+| 利用方法 | できること | 必要な feature |
+| --- | --- | --- |
+| Rust の `ad-render` | 複数の Axes、線・点・RGBA 画像・文字、目盛り・ラベルを持つ Figure を構成する | なし |
+| Rust の `ad-visualization` | 占有格子地図を準備し、経路・ロボット・マーカー・点群・LiDAR を地図上に描く | なし |
+| Rust のヘッドレス PNG 出力 | `Figure` または `Visualizer` のシーンを Vulkan で描画して保存する | `wgpu,png` |
+| Rust のウィンドウ表示 | GLFW/X11 のウィンドウへ描画する | `window` |
+| C ABI / C++20 アダプター | 地図の準備、経路・ロボットなどのシーン構築 | FFI クレートの既定 feature |
+| C ABI / C++20 アダプター | 構築したシーンの PNG 保存、ウィンドウ表示 | FFI クレートの `native` |
+
+`ad-render` の `png` feature だけでも既存の `CpuImage` を PNG に書き出せます。Figure や Visualizer を描画して PNG に保存する場合は `wgpu,png` が必要です。C ABI / C++ アダプターは `ad-visualization` の地図向け API を公開しており、`ad-render` の汎用 Figure API は公開していません。
+
+対応範囲、Rust からの最小利用例、機能ごとの制約は [現在利用できる機能](docs/current_capabilities.md) を参照してください。
 
 ## 動作環境と準備
 
-動作確認の対象は Linux x86_64、X11、`wgpu` の Vulkan バックエンドです。Rust（edition 2024 対応）、Vulkan ローダーと対応ドライバーを用意してください。ウィンドウを使う場合は、GLFW の X11 ビルドに必要な C コンパイラーと開発用ライブラリも必要です。PNG 出力にも利用可能な Vulkan アダプターが必要です。CPU のモデルテストは GPU なしで実行できます。
+動作確認の対象は Linux x86_64、X11、`wgpu` の Vulkan バックエンドです。Rust（edition 2024 対応）、Vulkan ローダーと対応ドライバーを用意してください。ウィンドウを使う場合は、GLFW の X11 ビルドに必要な C コンパイラーと開発用ライブラリも必要です。Figure / Visualizer の PNG 出力にも利用可能な Vulkan アダプターが必要です。CPU のモデルテストと `CpuImage` の PNG 書き出しは GPU なしで実行できます。
 
 ## Rust のサンプルを実行する
 
@@ -67,7 +80,7 @@ Linux x86_64 用の配布ディレクトリと `.tar.gz` を作成できます�
 bash scripts/package-linux-bundle.sh
 ```
 
-出力は `dist/ad-visualization-linux-x86_64/` と同名の `.tar.gz` です。別の出力先を指定する場合はスクリプトの第 1 引数にディレクトリ名を渡します。既存の配布物は上書きしません。
+出力は `dist/ad-visualization-linux-x86_64/`、同名の `.tar.gz` と `.tar.gz.sha256` です。別の出力先を指定する場合はスクリプトの第 1 引数にディレクトリ名を渡します。既存の配布物は上書きしません。
 
 ```bash
 ./dist/ad-visualization-linux-x86_64/run-fixed-scene.sh
@@ -77,6 +90,12 @@ bash scripts/package-linux-bundle.sh
 
 ヘッドレス版の `run-fixed-scene.sh` は GLFW/X11 にリンクせず、ウィンドウ版は X11 が使える環境で実行します。配布物の実行に Rust ツールチェーンは不要です。対応する Linux のシステムライブラリ、Vulkan ローダーと GPU ドライバーは実行先に必要です。C++ アプリ本体はこの配布物には含めません。
 
+GitHub Release 用の版名付き成果物の作成、検証、アップロード手順は [リリース手順](docs/releasing.md) を参照してください。
+
+## ライセンス
+
+本プロジェクトは [Apache License 2.0](LICENSE) で公開します。同梱フォントと依存クレートのライセンス文書は配布物の `licenses/` に含めます。
+
 ## テスト
 
 GPU を使わないモデル・FFI テストは次のコマンドで実行できます。
@@ -85,7 +104,7 @@ GPU を使わないモデル・FFI テストは次のコマンドで実行でき
 cargo test --workspace
 ```
 
-全 feature のテストは次のコマンドで実行します。GPU を使うサンプルの実行には Vulkan アダプターが必要です。
+全 feature のテストは次のコマンドで実行します。このテストは主にモデル、表示リスト、PNG 書き込み、FFI 境界を確認します。GPU での描画とウィンドウ表示はサンプルを別途実行して確認してください。GPU を使うサンプルの実行には Vulkan アダプターが必要です。
 
 ```bash
 cargo test --workspace --all-features
