@@ -1,0 +1,40 @@
+[package]
+name = "ad-render"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ab_glyph = "=0.2.32"
+wgpu = { version = "=30.0.1", default-features = false, features = ["std", "vulkan", "wgsl"], optional = true }
+
+glfw = {version = "=0.63.0", default-features = false, features = ["src-build", "x11", "raw-window-handle-v0-6"], optional = true}
+
+[features]
+default = []
+wgpu = ["dep:wgpu"]
+window = ["wgpu", "dep:glfw"]
+png = []
+
+[[example]]
+name = "glfw_wgpu_probe"
+required-features = ["window"]
+
+[[example]]
+name = "headless_clear"
+required-features = ["wgpu"]
+
+[[example]]
+name = "headless_scene"
+required-features = ["wgpu"]
+
+[[example]]
+name = "headless_png"
+required-features = ["wgpu", "png"]
+
+[[example]]
+name = "headless_figure_png"
+required-features = ["wgpu", "png"]
+
+[[example]]
+name = "practical_graph"
+required-features = ["wgpu", "png"]

@@ -1,0 +1,17 @@
+[package]
+name = "ad-visualization"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ad-render = { path = "../ad-render", default-features = false }
+
+[features]
+default = []
+wgpu = ["ad-render/wgpu"]
+window = ["wgpu", "ad-render/window"]
+png = ["ad-render/png"]
+
+[[example]]
+name = "fixed_scene"
+required-features = ["wgpu", "png"]

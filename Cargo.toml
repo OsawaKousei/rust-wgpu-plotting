@@ -1,0 +1,7 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/ad-render",
+    "crates/ad-visualization",
+    "crates/ad-visualization-ffi",
+]

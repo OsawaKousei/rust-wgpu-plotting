@@ -1,0 +1,14 @@
+[package]
+name = "ad-visualization-ffi"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+ad-visualization = { path = "../ad-visualization", default-features = false }
+
+[features]
+default = []
+native = ["ad-visualization/window", "ad-visualization/png"]

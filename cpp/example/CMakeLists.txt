@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.22)
+project(ad_visualization_cpp_consumer LANGUAGES CXX)
+
+find_package(AdVisualization CONFIG REQUIRED)
+add_executable(ad_visualization_cpp_consumer consumer.cpp)
+target_compile_features(ad_visualization_cpp_consumer PRIVATE cxx_std_20)
+target_link_libraries(ad_visualization_cpp_consumer PRIVATE AdVisualization::Visualizer)
